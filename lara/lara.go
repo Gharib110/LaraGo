@@ -1,5 +1,7 @@
 package lara
 
+import "fmt"
+
 const version = "1.0.0"
 
 func (l *Lara) New(rootPath string) error {
@@ -13,6 +15,13 @@ func (l *Lara) New(rootPath string) error {
 		return err
 	}
 
+	err = l.checkDotEnv(rootPath)
+	if err != nil {
+		return err
+	}
+
+	// read .env file
+
 	return nil
 }
 
@@ -23,6 +32,15 @@ func (l *Lara) Init(p initPaths) error {
 		if err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (l *Lara) checkDotEnv(path string) error {
+	err := l.CreateFileIfNotExists(fmt.Sprintf("%s/.env", path))
+	if err != nil {
+		return err
 	}
 
 	return nil
