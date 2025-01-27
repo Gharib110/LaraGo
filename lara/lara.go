@@ -3,6 +3,16 @@ package lara
 const version = "1.0.0"
 
 func (l *Lara) New(rootPath string) error {
+	pathConfig := initPaths{
+		rootPath:    rootPath,
+		folderNames: []string{"views", "handlers", "migrations", "data", "public", "tmp", "logs", "middleware"},
+	}
+
+	err := l.Init(pathConfig)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
