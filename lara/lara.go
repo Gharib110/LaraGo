@@ -1,6 +1,11 @@
 package lara
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+	"os"
+	"strconv"
+)
 import "github.com/joho/godotenv"
 
 const version = "1.0.0"
@@ -27,6 +32,12 @@ func (l *Lara) New(rootPath string) error {
 		return err
 	}
 
+	infoLog, errLog := l.startLoggers()
+	l.InfoLog = infoLog
+	l.ErrorLog = errLog
+	l.Debug, _ = strconv.ParseBool(os.Getenv("DEBUG"))
+	l.Version = version
+
 	return nil
 }
 
@@ -49,4 +60,13 @@ func (l *Lara) checkDotEnv(path string) error {
 	}
 
 	return nil
+}
+
+func (l *Lara) startLoggers() (*log.Logger, *log.Logger) {
+	var infoLog *log.Logger
+	var errLog *log.Logger
+	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	errLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+
+	return infoLog, errLog
 }

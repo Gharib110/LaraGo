@@ -14,8 +14,6 @@ func initApplication() *application {
 
 	la := &lara.Lara{
 		AppName: "myTestApp",
-		Debug:   true,
-		Version: "",
 	}
 
 	err = la.New(path)
@@ -23,6 +21,7 @@ func initApplication() *application {
 		log.Fatal(err)
 	}
 
+	la.InfoLog.Println("Debug is set to, ", la.Debug)
 	app := &application{
 		App: la,
 	}
