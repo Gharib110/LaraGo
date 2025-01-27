@@ -1,6 +1,7 @@
 package lara
 
 import "fmt"
+import "github.com/joho/godotenv"
 
 const version = "1.0.0"
 
@@ -21,6 +22,10 @@ func (l *Lara) New(rootPath string) error {
 	}
 
 	// read .env file
+	err = godotenv.Load(fmt.Sprintf("%s/.env", rootPath))
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
