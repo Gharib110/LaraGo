@@ -14,6 +14,7 @@ type Lara struct {
 	ErrorLog *log.Logger
 	InfoLog  *log.Logger
 	RootPath string
+	config   config
 }
 
 type config struct {
