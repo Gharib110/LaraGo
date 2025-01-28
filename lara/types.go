@@ -1,6 +1,7 @@
 package lara
 
 import (
+	"LaraGo/lara/render"
 	"github.com/go-chi/chi/v5"
 	"log"
 )
@@ -19,6 +20,7 @@ type Lara struct {
 	RootPath string
 	config   config
 	Routes   *chi.Mux
+	Render   *render.Render
 }
 
 type config struct {

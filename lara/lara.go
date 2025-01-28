@@ -1,6 +1,7 @@
 package lara
 
 import (
+	"LaraGo/lara/render"
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"log"
@@ -47,6 +48,8 @@ func (l *Lara) New(rootPath string) error {
 		port:     os.Getenv("PORT"),
 		renderer: os.Getenv("RENDERER"),
 	}
+
+	l.Render = l.createRenderer(l)
 
 	return nil
 }
@@ -98,4 +101,14 @@ func (l *Lara) startLoggers() (*log.Logger, *log.Logger) {
 	errLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
 	return infoLog, errLog
+}
+
+func (l *Lara) createRenderer(lar *Lara) *render.Render {
+	myRenderer := render.Render{
+		Renderer: lar.config.renderer,
+		RootPath: lar.RootPath,
+		Port:     lar.config.port,
+	}
+
+	return &myRenderer
 }
