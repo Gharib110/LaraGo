@@ -15,3 +15,8 @@ type Lara struct {
 	InfoLog  *log.Logger
 	RootPath string
 }
+
+type config struct {
+	port     string
+	renderer string
+}

@@ -37,6 +37,12 @@ func (l *Lara) New(rootPath string) error {
 	l.ErrorLog = errLog
 	l.Debug, _ = strconv.ParseBool(os.Getenv("DEBUG"))
 	l.Version = version
+	l.RootPath = rootPath
+
+	l.config = config{
+		port:     os.Getenv("PORT"),
+		renderer: os.Getenv("RENDERER"),
+	}
 
 	return nil
 }
