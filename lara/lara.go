@@ -2,9 +2,12 @@ package lara
 
 import (
 	"fmt"
+	"github.com/go-chi/chi/v5"
 	"log"
+	"net/http"
 	"os"
 	"strconv"
+	"time"
 )
 import "github.com/joho/godotenv"
 
@@ -38,6 +41,7 @@ func (l *Lara) New(rootPath string) error {
 	l.Debug, _ = strconv.ParseBool(os.Getenv("DEBUG"))
 	l.Version = version
 	l.RootPath = rootPath
+	l.Routes = l.routes().(*chi.Mux)
 
 	l.config = config{
 		port:     os.Getenv("PORT"),
@@ -57,6 +61,25 @@ func (l *Lara) Init(p initPaths) error {
 	}
 
 	return nil
+}
+
+// ListenAndServe starts the server
+func (l *Lara) ListenAndServe() {
+	srv := &http.Server{
+		Addr:              fmt.Sprintf(":%s", l.config.port),
+		ErrorLog:          l.ErrorLog,
+		Handler:           l.routes(),
+		IdleTimeout:       30 * time.Second,
+		ReadHeaderTimeout: 30 * time.Second,
+		WriteTimeout:      30 * time.Second,
+	}
+
+	l.InfoLog.Printf("Starting server on port %s", l.config.port)
+
+	err := srv.ListenAndServe()
+	if err != nil {
+		l.ErrorLog.Fatal(err)
+	}
 }
 
 func (l *Lara) checkDotEnv(path string) error {

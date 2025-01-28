@@ -1,6 +1,9 @@
 package lara
 
-import "log"
+import (
+	"github.com/go-chi/chi/v5"
+	"log"
+)
 
 type initPaths struct {
 	rootPath    string
@@ -15,6 +18,7 @@ type Lara struct {
 	InfoLog  *log.Logger
 	RootPath string
 	config   config
+	Routes   *chi.Mux
 }
 
 type config struct {
