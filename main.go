@@ -1,9 +1,13 @@
 package main
 
-import "LaraGo/lara"
+import (
+	"LaraGo/handlers"
+	"LaraGo/lara"
+)
 
 type application struct {
-	App *lara.Lara
+	App      *lara.Lara
+	Handlers *handlers.Handlers
 }
 
 func main() {

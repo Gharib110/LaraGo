@@ -71,7 +71,7 @@ func (l *Lara) ListenAndServe() {
 	srv := &http.Server{
 		Addr:              fmt.Sprintf(":%s", l.config.port),
 		ErrorLog:          l.ErrorLog,
-		Handler:           l.routes(),
+		Handler:           l.Routes,
 		IdleTimeout:       30 * time.Second,
 		ReadHeaderTimeout: 30 * time.Second,
 		WriteTimeout:      30 * time.Second,

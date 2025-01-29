@@ -1,6 +1,7 @@
 package main
 
 import (
+	"LaraGo/handlers"
 	"LaraGo/lara"
 	"log"
 	"os"
@@ -22,9 +23,16 @@ func initApplication() *application {
 	}
 
 	la.InfoLog.Println("Debug is set to, ", la.Debug)
-	app := &application{
+	myHandlers := &handlers.Handlers{
 		App: la,
 	}
+
+	app := &application{
+		App:      la,
+		Handlers: myHandlers,
+	}
+
+	app.App.Routes = app.routes()
 
 	return app
 }
