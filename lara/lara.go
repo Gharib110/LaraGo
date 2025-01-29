@@ -49,7 +49,7 @@ func (l *Lara) New(rootPath string) error {
 		renderer: os.Getenv("RENDERER"),
 	}
 
-	l.Render = l.createRenderer(l)
+	l.createRenderer()
 
 	return nil
 }
@@ -103,12 +103,11 @@ func (l *Lara) startLoggers() (*log.Logger, *log.Logger) {
 	return infoLog, errLog
 }
 
-func (l *Lara) createRenderer(lar *Lara) *render.Render {
+func (l *Lara) createRenderer() {
 	myRenderer := render.Render{
-		Renderer: lar.config.renderer,
-		RootPath: lar.RootPath,
-		Port:     lar.config.port,
+		Renderer: l.config.renderer,
+		RootPath: l.RootPath,
+		Port:     l.config.port,
 	}
-
-	return &myRenderer
+	l.Render = &myRenderer
 }
