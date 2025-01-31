@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/go-chi/chi/v5"
 	"net/http"
 )
@@ -14,7 +15,7 @@ func (a *application) routes() *chi.Mux {
 		if err != nil {
 			a.App.ErrorLog.Println("error rendering: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("Error rendering 502"))
+			w.Write([]byte(fmt.Sprintf("error rendering: %s", err)))
 			return
 		}
 	})
