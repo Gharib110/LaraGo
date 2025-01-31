@@ -2,6 +2,7 @@ package lara
 
 import (
 	"LaraGo/lara/render"
+	"LaraGo/session"
 	"fmt"
 	"github.com/CloudyKit/jet/v6"
 	"github.com/go-chi/chi/v5"
@@ -48,7 +49,24 @@ func (l *Lara) New(rootPath string) error {
 	l.config = config{
 		port:     os.Getenv("PORT"),
 		renderer: os.Getenv("RENDERER"),
+		cookie: cookieConfig{
+			name:     os.Getenv("COOKIE_NAME"),
+			lifetime: os.Getenv("COOKIE_LIFETIME"),
+			persist:  os.Getenv("COOKIE_PERSISTS"),
+			secure:   os.Getenv("COOKIE_SECURE"),
+		},
+		sessionType: os.Getenv("SESSION_TYPE"),
 	}
+
+	sess := session.Session{
+		CookieLifeTime: l.config.cookie.lifetime,
+		CookiePersist:  l.config.cookie.persist,
+		CookieName:     l.config.cookie.name,
+		CookieDomain:   l.config.cookie.domain,
+		SessionType:    l.config.sessionType,
+	}
+
+	l.Session = sess.InitSession()
 
 	var views = jet.NewSet(
 		jet.NewOSFileSystemLoader(fmt.Sprintf("%s/views", rootPath)),
