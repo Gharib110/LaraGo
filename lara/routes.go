@@ -6,6 +6,10 @@ import (
 	"net/http"
 )
 
+func (l *Lara) SessionLoad(next http.Handler) http.Handler {
+	return l.Session.LoadAndSave(next)
+}
+
 func (l *Lara) routes() http.Handler {
 	mux := chi.NewRouter()
 	mux.Use(middleware.RequestID)
