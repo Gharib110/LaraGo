@@ -2,6 +2,7 @@ package lara
 
 import (
 	"LaraGo/lara/render"
+	"github.com/CloudyKit/jet/v6"
 	"github.com/go-chi/chi/v5"
 	"log"
 )
@@ -21,6 +22,7 @@ type Lara struct {
 	config   config
 	Routes   *chi.Mux
 	Render   *render.Render
+	JetViews *jet.Set
 }
 
 type config struct {

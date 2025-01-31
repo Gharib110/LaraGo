@@ -1,11 +1,14 @@
 package render
 
+import "github.com/CloudyKit/jet/v6"
+
 type Render struct {
 	Renderer   string
 	RootPath   string
 	Secure     bool
 	Port       string
 	ServerName string
+	JetViews   *jet.Set
 }
 
 type TemplateData struct {

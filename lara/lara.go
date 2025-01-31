@@ -3,6 +3,7 @@ package lara
 import (
 	"LaraGo/lara/render"
 	"fmt"
+	"github.com/CloudyKit/jet/v6"
 	"github.com/go-chi/chi/v5"
 	"log"
 	"net/http"
@@ -48,6 +49,12 @@ func (l *Lara) New(rootPath string) error {
 		port:     os.Getenv("PORT"),
 		renderer: os.Getenv("RENDERER"),
 	}
+
+	var views = jet.NewSet(
+		jet.NewOSFileSystemLoader(fmt.Sprintf("%s/views", rootPath)),
+		jet.InDevelopmentMode(),
+	)
+	l.JetViews = views
 
 	l.createRenderer()
 
@@ -108,6 +115,7 @@ func (l *Lara) createRenderer() {
 		Renderer: l.config.renderer,
 		RootPath: l.RootPath,
 		Port:     l.config.port,
+		JetViews: l.JetViews,
 	}
 	l.Render = &myRenderer
 }
