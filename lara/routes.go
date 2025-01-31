@@ -7,6 +7,7 @@ import (
 )
 
 func (l *Lara) SessionLoad(next http.Handler) http.Handler {
+	l.InfoLog.Println("SessionLoad Called")
 	return l.Session.LoadAndSave(next)
 }
 
