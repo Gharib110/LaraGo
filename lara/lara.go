@@ -39,6 +39,20 @@ func (l *Lara) New(rootPath string) error {
 	}
 
 	infoLog, errLog := l.startLoggers()
+
+	if os.Getenv("DATABASE_TYPE") != "" {
+		db, err := l.OpenDB(os.Getenv("DATABASE_TYPE"), l.BuildDSN())
+		if err != nil {
+			errLog.Println(err.Error())
+			os.Exit(1)
+		}
+
+		l.DB = DB{
+			DataType: os.Getenv("DATABASE_TYPE"),
+			Pool:     db,
+		}
+	}
+
 	l.InfoLog = infoLog
 	l.ErrorLog = errLog
 	l.Debug, _ = strconv.ParseBool(os.Getenv("DEBUG"))
@@ -57,6 +71,10 @@ func (l *Lara) New(rootPath string) error {
 			domain:   os.Getenv("COOKIE_DOMAIN"),
 		},
 		sessionType: os.Getenv("SESSION_TYPE"),
+		db: dBConfig{
+			dsn: l.BuildDSN(),
+			db:  os.Getenv("DATABASE_TYPE"),
+		},
 	}
 
 	sess := session.Session{
@@ -103,6 +121,7 @@ func (l *Lara) ListenAndServe() {
 		WriteTimeout:      30 * time.Second,
 	}
 
+	defer l.DB.Pool.Close()
 	l.InfoLog.Printf("Starting server on port %s", l.config.port)
 
 	err := srv.ListenAndServe()
