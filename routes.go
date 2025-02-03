@@ -20,7 +20,7 @@ func (a *application) routes() *chi.Mux {
 		}
 	})
 
-	a.App.Routes.Get("/session", a.Handlers.SessionTest)
+	a.App.Routes.Get("/test-session", a.Handlers.SessionTest)
 	fileServer := http.FileServer(http.Dir("./public"))
 	a.App.Routes.Handle("/public/*", http.StripPrefix("/public", fileServer))
 	return a.App.Routes

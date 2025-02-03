@@ -2,6 +2,7 @@ package lara
 
 import (
 	"LaraGo/lara/render"
+	"database/sql"
 	"github.com/CloudyKit/jet/v6"
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-chi/chi/v5"
@@ -25,6 +26,7 @@ type Lara struct {
 	Render   *render.Render
 	JetViews *jet.Set
 	Session  *scs.SessionManager
+	DB       DB
 }
 
 type config struct {
@@ -32,6 +34,7 @@ type config struct {
 	renderer    string
 	cookie      cookieConfig
 	sessionType string
+	db          dBConfig
 }
 
 type cookieConfig struct {
@@ -40,4 +43,14 @@ type cookieConfig struct {
 	lifetime string
 	persist  string
 	secure   string
+}
+
+type dBConfig struct {
+	dsn string
+	db  string
+}
+
+type DB struct {
+	DataType string
+	Pool     *sql.DB
 }

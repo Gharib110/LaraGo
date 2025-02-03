@@ -138,3 +138,20 @@ func (l *Lara) createRenderer() {
 	}
 	l.Render = &myRenderer
 }
+
+func (l *Lara) BuildDSN() string {
+	var dsn string
+
+	switch os.Getenv("DATABASE_TYPE") {
+	case "postgres", "postgresql":
+		dsn = fmt.Sprintf("host=%s port=%s user=%s password=%s "+
+			"dbname=%s sslmode=%s timezone=UTC conntect_timeout=5",
+			os.Getenv("DATABASE_HOST"), os.Getenv("DATABASE_PORT"),
+			os.Getenv("DATABASE_NAME"), os.Getenv("DATABASE_USERNAME"),
+			os.Getenv("DATABASE_PASSWORD"), os.Getenv("DATABASE_SSL_MODE"))
+	default:
+
+	}
+
+	return dsn
+}
