@@ -1,6 +1,25 @@
 package lara
 
-import "os"
+import (
+	"crypto/rand"
+	"os"
+)
+
+const (
+	randomString = "abcdmcnzjsahdfieqpqowejalkz2712981AMALSKPWIQUEYRTFGCBZ,NCZPAOKSLAJ+-_"
+)
+
+// RandomString generate a random string
+func (l *Lara) RandomString(size int) string {
+	s, r := make([]rune, size), []rune(randomString)
+	for i := range s {
+		p, _ := rand.Prime(rand.Reader, len(r))
+		x, y := p.Uint64(), uint64(len(r))
+		s[i] = r[x%y]
+	}
+
+	return string(s)
+}
 
 func (l *Lara) CreateDirIfNotExist(path string) error {
 	const mode = 0755
