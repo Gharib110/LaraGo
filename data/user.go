@@ -2,6 +2,7 @@ package data
 
 import (
 	up "github.com/upper/db/v4"
+	"golang.org/x/crypto/bcrypt"
 	"time"
 )
 
@@ -22,10 +23,10 @@ func (u *User) Table() string {
 }
 
 func (u *User) GetAll(condition up.Cond) ([]*User, error) {
-	collection := up.Collection(condition)
+	collection := upper.Collection(u.Table())
 
 	var users []*User
-	res := collection.Find(condition)
+	res := collection.Find().OrderBy("last_name")
 	err := res.All(&users)
 	if err != nil {
 		return nil, err
@@ -36,7 +37,7 @@ func (u *User) GetAll(condition up.Cond) ([]*User, error) {
 
 func (u *User) GetByEmail(email string) (*User, error) {
 	var user User
-	collection := up.Collection(u.Table())
+	collection := upper.Collection(u.Table())
 	res := collection.Find(up.Cond{"email": email})
 	err := res.One(&user)
 	if err != nil {
@@ -44,7 +45,7 @@ func (u *User) GetByEmail(email string) (*User, error) {
 	}
 
 	var token Token
-	coll := up.Collection(token.Table())
+	coll := upper.Collection(token.Table())
 	res = coll.Find(up.Cond{"user_id =": user.ID, "expiry <": time.Now()}).OrderBy("Created_at desc")
 	err = res.One(&token)
 	if err != nil {
@@ -54,4 +55,91 @@ func (u *User) GetByEmail(email string) (*User, error) {
 	user.Token = token
 
 	return &user, nil
+}
+
+func (u *User) Get(id int) (*User, error) {
+	var theUser User
+	collection := upper.Collection(u.Table())
+	res := collection.Find(up.Cond{"id =": id})
+
+	err := res.One(&theUser)
+	if err != nil {
+		return nil, err
+	}
+
+	var token Token
+	coll := upper.Collection(token.Table())
+	res = coll.Find(up.Cond{"user_id =": theUser.ID, "expiry <": time.Now()}).OrderBy("Created_at desc")
+	err = res.One(&token)
+	if err != nil {
+		return nil, err
+	}
+
+	theUser.Token = token
+
+	return &theUser, nil
+}
+
+func (u *User) Update(theUser User) error {
+	theUser.UpdatedAt = time.Now()
+	collection := upper.Collection(u.Table())
+	res := collection.Find(theUser.ID)
+	err := res.Update(&theUser)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u *User) Delete(id int) error {
+	collection := upper.Collection(u.Table())
+	res := collection.Find(id)
+	err := res.Delete()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u *User) Insert(theUser User) (int, error) {
+	newHash, err := bcrypt.GenerateFromPassword([]byte(theUser.Password), 12)
+	if err != nil {
+		return 0, err
+	}
+
+	theUser.CreatedAt = time.Now()
+	theUser.UpdatedAt = time.Now()
+	theUser.Password = string(newHash)
+
+	collection := upper.Collection(u.Table())
+	res, err := collection.Insert(&theUser)
+	if err != nil {
+		return 0, err
+	}
+
+	id := getInsertID(res.ID())
+
+	return id, nil
+}
+
+func (u *User) ResetPassword(id int, password string) error {
+	newHash, err := bcrypt.GenerateFromPassword([]byte(password), 12)
+	if err != nil {
+		return err
+	}
+
+	theUser, err := u.Get(id)
+	if err != nil {
+		return err
+	}
+
+	u.Password = string(newHash)
+	err = theUser.Update(*u)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

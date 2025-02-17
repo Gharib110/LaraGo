@@ -32,8 +32,8 @@ func (l *Lara) New(rootPath string) error {
 		return err
 	}
 
-	// read .env file
-	err = godotenv.Load(fmt.Sprintf("%s/.env", rootPath))
+	// read example.env file
+	err = godotenv.Load(fmt.Sprintf("%s/example.env", rootPath))
 	if err != nil {
 		return err
 	}
@@ -131,7 +131,7 @@ func (l *Lara) ListenAndServe() {
 }
 
 func (l *Lara) checkDotEnv(path string) error {
-	err := l.CreateFileIfNotExists(fmt.Sprintf("%s/.env", path))
+	err := l.CreateFileIfNotExists(fmt.Sprintf("%s/example.env", path))
 	if err != nil {
 		return err
 	}
