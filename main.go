@@ -1,6 +1,7 @@
 package main
 
 import (
+	"LaraGo/data"
 	"LaraGo/handlers"
 	"LaraGo/lara"
 )
@@ -8,6 +9,7 @@ import (
 type application struct {
 	App      *lara.Lara
 	Handlers *handlers.Handlers
+	Models   data.Models
 }
 
 func main() {

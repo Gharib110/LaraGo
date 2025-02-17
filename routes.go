@@ -24,5 +24,9 @@ func (a *application) routes() *chi.Mux {
 	fileServer := http.FileServer(http.Dir("./public"))
 	a.App.Routes.Handle("/public/*", http.StripPrefix("/public", fileServer))
 
+	a.App.Routes.Get("/create-suer", func(w http.ResponseWriter, r *http.Request) {
+
+	})
+
 	return a.App.Routes
 }

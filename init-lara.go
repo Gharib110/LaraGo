@@ -1,6 +1,7 @@
 package main
 
 import (
+	"LaraGo/data"
 	"LaraGo/handlers"
 	"LaraGo/lara"
 	"log"
@@ -33,6 +34,8 @@ func initApplication() *application {
 	}
 
 	app.App.Routes = app.routes()
+
+	app.Models = data.New(app.App.DB.Pool)
 
 	return app
 }
