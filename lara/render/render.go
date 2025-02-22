@@ -10,6 +10,10 @@ import (
 )
 
 func (ren *Render) defaultData(td *TemplateData, r *http.Request) *TemplateData {
+	td.Secure = ren.Secure
+	td.ServerName = ren.ServerName
+	td.Port = ren.Port
+
 	if ren.Session.Exists(r.Context(), "userID") {
 		td.IsAuthenticated = true
 	}
