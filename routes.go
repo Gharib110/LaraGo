@@ -64,5 +64,8 @@ func (a *application) routes() *chi.Mux {
 			fmt.Fprintf(w, "%s %s %s", u.LastName, u.FirstName, u.Email)
 		})
 
+	a.App.Routes.Get("/users/login", a.Handlers.UserLogin)
+	a.App.Routes.Post("/users/login", a.Handlers.PostUserLogin)
+
 	return a.App.Routes
 }

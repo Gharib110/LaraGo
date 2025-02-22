@@ -9,6 +9,13 @@ import (
 	"strings"
 )
 
+func (ren *Render) defaultData(td *TemplateData, r *http.Request) *TemplateData {
+	if ren.Session.Exists(r.Context(), "userID") {
+		td.IsAuthenticated = true
+	}
+	return td
+}
+
 // Page renders a page based on the renderer in Render struct
 func (ren *Render) Page(w http.ResponseWriter, r *http.Request,
 	view string, variables, data interface{}) error {
@@ -59,6 +66,8 @@ func (ren *Render) JetPage(w http.ResponseWriter, r *http.Request, templateName 
 	if data != nil {
 		td = data.(*TemplateData)
 	}
+
+	td = ren.defaultData(td, r)
 
 	t, err := ren.JetViews.GetTemplate(templateName + ".jet")
 	if err != nil {

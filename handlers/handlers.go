@@ -1,13 +1,15 @@
 package handlers
 
 import (
+	"LaraGo/data"
 	"LaraGo/lara"
 	"github.com/CloudyKit/jet/v6"
 	"net/http"
 )
 
 type Handlers struct {
-	App *lara.Lara
+	App    *lara.Lara
+	Models data.Models
 }
 
 func (h *Handlers) Home(w http.ResponseWriter, r *http.Request) {

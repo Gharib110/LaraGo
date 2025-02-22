@@ -154,6 +154,7 @@ func (l *Lara) createRenderer() {
 		RootPath: l.RootPath,
 		Port:     l.config.port,
 		JetViews: l.JetViews,
+		Session:  l.Session,
 	}
 	l.Render = &myRenderer
 }
