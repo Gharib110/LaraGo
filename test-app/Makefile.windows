@@ -1,0 +1,32 @@
+BINARY_NAME=LaraApp.exe
+
+## build: builds all binaries
+build:
+    @go mod vendor
+    @go build -o tmp/${BINARY_NAME} .
+	@echo Lara built!
+
+run:
+	@echo Staring Lara...
+    @start /min cmd /c tmp\${BINARY_NAME} &
+	@echo Lara started!
+
+clean:
+	@echo Cleaning...
+	@DEL ${BINARY_NAME}
+	@go clean
+	@echo Cleaned!
+
+test:
+	@echo Testing...
+	@go test ./...
+	@echo Done!
+
+start: run
+	
+stop:
+	@echo "Starting the front end..."
+	@taskkill /IM ${BINARY_NAME} /F
+	@echo Stopped Lara
+
+restart: stop start
