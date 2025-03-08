@@ -74,3 +74,22 @@ func showHelp() {
     version - print version number
 `)
 }
+
+func exitGraceFully(err error, msg ...string) {
+	message := ""
+	if len(msg) > 0 {
+		message = msg[0]
+	}
+
+	if err != nil {
+		color.Red("%s\n%s", message, err)
+	}
+
+	if len(message) > 0 {
+		color.Yellow(message)
+	} else {
+		color.Green("Finished")
+	}
+
+	os.Exit(0)
+}
