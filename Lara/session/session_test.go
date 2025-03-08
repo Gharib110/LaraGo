@@ -13,7 +13,7 @@ func TestSession_InitSession(t *testing.T) {
 	c := &Session{
 		CookieLifetime: "100",
 		CookiePersist:  "true",
-		CookieName:     "Lara",
+		CookieName:     "lara",
 		CookieDomain:   "localhost",
 		SessionType:    "cookie",
 	}

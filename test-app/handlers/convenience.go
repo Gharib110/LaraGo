@@ -2,9 +2,8 @@ package handlers
 
 import (
 	"context"
+	lara "github.com/Gharib110/LaraGo"
 	"net/http"
-
-	"github.com/Gharib110/LaraGo"
 )
 
 func (h *Handlers) render(w http.ResponseWriter, r *http.Request, tmpl string, variables, data interface{}) error {
@@ -40,7 +39,7 @@ func (h *Handlers) randomString(n int) string {
 }
 
 func (h *Handlers) encrypt(text string) (string, error) {
-	enc := Lara.Encryption{Key: []byte(h.App.EncryptionKey)}
+	enc := lara.Encryption{Key: []byte(h.App.EncryptionKey)}
 
 	encrypted, err := enc.Encrypt(text)
 	if err != nil {
@@ -50,7 +49,7 @@ func (h *Handlers) encrypt(text string) (string, error) {
 }
 
 func (h *Handlers) decrypt(crypto string) (string, error) {
-	enc := Lara.Encryption{Key: []byte(h.App.EncryptionKey)}
+	enc := lara.Encryption{Key: []byte(h.App.EncryptionKey)}
 
 	decrypted, err := enc.Decrypt(crypto)
 	if err != nil {

@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"fmt"
-	"myapp/data"
 	"net/http"
+	"test-app/data"
 
 	"github.com/CloudyKit/jet/v6"
 )

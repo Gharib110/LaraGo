@@ -10,13 +10,12 @@ cover:
 coverage:
 	@go test -cover ./...
 
-## build_cli: builds the command line tool Lara and copies it to test-app
+## build_cli: builds the command line tool Lara and copies it to myapp
 build_cli:
-	@go build -o ../test-app/lara ./cmd/cli
+	@go build -o ../myapp/Lara ./cmd/cli
 
 ## build: builds the command line tool dist directory
 build:
-	@go build -o ./dist/lara ./cmd/cli
-
-install_cli:
-	@go build -o ~/go/bin/lara -ldflags '-s -w' ./cmd/cli
+	@go build -o ./dist/Lara ./cmd/cli
+	# windows users should delete the line above this one, and use the line below instead (uncommented)
+	#@go build -o dist/Lara.exe ./cmd/cli

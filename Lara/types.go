@@ -1,4 +1,4 @@
-package Lara
+package lara
 
 import "database/sql"
 

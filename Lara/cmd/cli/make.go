@@ -2,17 +2,14 @@ package main
 
 import (
 	"errors"
-	"fmt"
-	"io/ioutil"
-	"strings"
-	"time"
-
 	"github.com/fatih/color"
 	"github.com/gertd/go-pluralize"
 	"github.com/iancoleman/strcase"
+	"io/ioutil"
+	"strings"
 )
 
-func doMake(arg2, arg3 string) error {
+func doMake(arg2, arg3, arg4 string) error {
 
 	switch arg2 {
 	case "key":
@@ -20,22 +17,31 @@ func doMake(arg2, arg3 string) error {
 		color.Yellow("32 character encryption key: %s", rnd)
 
 	case "migration":
-		dbType := la.DB.DataType
+		checkForDB()
+
+		//dbType := cel.DB.DataType
 		if arg3 == "" {
 			exitGracefully(errors.New("you must give the migration a name"))
 		}
 
-		fileName := fmt.Sprintf("%d_%s", time.Now().UnixMicro(), arg3)
+		// default to migration type of fizz
+		migrationType := "fizz"
+		var up, down string
 
-		upFile := la.RootPath + "/migrations/" + fileName + "." + dbType + ".up.sql"
-		downFile := la.RootPath + "/migrations/" + fileName + "." + dbType + ".down.sql"
+		// are doing fizz or sql?
+		if arg4 == "fizz" || arg4 == "" {
+			upBytes, _ := templateFS.ReadFile("templates/migrations/migration_up.fizz")
+			downBytes, _ := templateFS.ReadFile("templates/migrations/migration_down.fizz")
 
-		err := copyFilefromTemplate("templates/migrations/migration."+dbType+".up.sql", upFile)
-		if err != nil {
-			exitGracefully(err)
+			up = string(upBytes)
+			down = string(downBytes)
+		} else {
+			migrationType = "sql"
 		}
 
-		err = copyFilefromTemplate("templates/migrations/migration."+dbType+".down.sql", downFile)
+		// create the migrations for either fizz or sql
+
+		err := la.CreatePopMigration([]byte(up), []byte(down), arg3, migrationType)
 		if err != nil {
 			exitGracefully(err)
 		}

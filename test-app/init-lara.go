@@ -2,10 +2,10 @@ package main
 
 import (
 	"log"
-	"myapp/data"
-	"myapp/handlers"
-	"myapp/middleware"
 	"os"
+	"test-app/data"
+	"test-app/handlers"
+	"test-app/middleware"
 
 	"github.com/Gharib110/LaraGo"
 )
@@ -16,25 +16,25 @@ func initApplication() *application {
 		log.Fatal(err)
 	}
 
-	// init Lara
-	lara := &Lara.Lara{}
-	err = lara.New(path)
+	// init lara
+	cel := &lara.Lara{}
+	err = cel.New(path)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	lara.AppName = "test-app"
+	cel.AppName = "myapp"
 
 	myMiddleware := &middleware.Middleware{
-		App: lara,
+		App: cel,
 	}
 
 	myHandlers := &handlers.Handlers{
-		App: lara,
+		App: cel,
 	}
 
 	app := &application{
-		App:        lara,
+		App:        cel,
 		Handlers:   myHandlers,
 		Middleware: myMiddleware,
 	}

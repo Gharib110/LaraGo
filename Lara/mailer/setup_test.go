@@ -10,20 +10,19 @@ import (
 	"github.com/ory/dockertest/v3/docker"
 )
 
-
 var pool *dockertest.Pool
 var resource *dockertest.Resource
 
 var mailer = Mail{
-	Domain: "localhost",
-	Templates: "./testdata/mail",
-	Host: "localhost",
-	Port: 1026,
-	Encryption: "none",
-	FromAddress: "me@here.com",
-	FromName: "Joe",
-	Jobs: make(chan Message, 1),
-	Results: make(chan Result, 1),
+	Domain:      "localhost",
+	Templates:   "./testdata/mail",
+	Host:        "localhost",
+	Port:        1026,
+	Encryption:  "none",
+	FromAddress: "me@ghariib.ir",
+	FromName:    "Alireza",
+	Jobs:        make(chan Message, 1),
+	Results:     make(chan Result, 1),
 }
 
 func TestMain(m *testing.M) {
@@ -34,9 +33,9 @@ func TestMain(m *testing.M) {
 	pool = p
 
 	opts := dockertest.RunOptions{
-		Repository: "mailhog/mailhog",
-		Tag: "latest",
-		Env: []string{},
+		Repository:   "mailhog/mailhog",
+		Tag:          "latest",
+		Env:          []string{},
 		ExposedPorts: []string{"1025", "8025"},
 		PortBindings: map[docker.Port][]docker.PortBinding{
 			"1025": {

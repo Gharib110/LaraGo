@@ -2,121 +2,212 @@ package handlers
 
 import (
 	"fmt"
-	"myapp/data"
-	"net/http"
-
 	"github.com/CloudyKit/jet/v6"
+	"github.com/Gharib110/LaraGo/filesystems"
+	"github.com/Gharib110/LaraGo/filesystems/miniofilesystem"
+	"github.com/Gharib110/LaraGo/filesystems/s3filesystem"
+	"github.com/Gharib110/LaraGo/filesystems/sftpfilesystem"
+	"github.com/Gharib110/LaraGo/filesystems/webdavfilesystem"
+	"io"
+	"net/http"
+	"net/url"
+	"os"
+	"test-app/data"
+
 	"github.com/Gharib110/LaraGo"
 )
 
 // Handlers is the type for handlers, and gives access to LaraGo and models
 type Handlers struct {
-	App    *Lara.Lara
+	App    *lara.Lara
 	Models data.Models
 }
 
 // Home is the handler to render the home page
 func (h *Handlers) Home(w http.ResponseWriter, r *http.Request) {
-	// defer h.App.LoadTime(time.Now())
 	err := h.render(w, r, "home", nil, nil)
 	if err != nil {
 		h.App.ErrorLog.Println("error rendering:", err)
 	}
 }
 
-// GoPage is the handler to demonstrate rendering a Go template
-func (h *Handlers) GoPage(w http.ResponseWriter, r *http.Request) {
-	err := h.App.Render.GoPage(w, r, "home", nil)
+func (h *Handlers) LaraUpload(w http.ResponseWriter, r *http.Request) {
+	err := h.render(w, r, "lara-upload", nil, nil)
 	if err != nil {
-		h.App.ErrorLog.Println("error rendering:", err)
+		h.App.ErrorLog.Println(err)
 	}
 }
 
-// JetPage is the handler to demonstrate rendering a jet page
-func (h *Handlers) JetPage(w http.ResponseWriter, r *http.Request) {
-	err := h.App.Render.JetPage(w, r, "jet-template", nil, nil)
+func (h *Handlers) PostLaraUpload(w http.ResponseWriter, r *http.Request) {
+	err := h.App.UploadFile(r, "", "formFile", &h.App.S3)
 	if err != nil {
-		h.App.ErrorLog.Println("error rendering:", err)
+		h.App.ErrorLog.Println(err)
+		h.App.Session.Put(r.Context(), "error", err.Error())
+	} else {
+		h.App.Session.Put(r.Context(), "flash", "Uploaded!")
 	}
+	http.Redirect(w, r, "/upload", http.StatusSeeOther)
 }
 
-// SessionTest is the handler to demonstrate session functionality
-func (h *Handlers) SessionTest(w http.ResponseWriter, r *http.Request) {
-	myData := "bar"
+func (h *Handlers) ListFS(w http.ResponseWriter, r *http.Request) {
+	var fs filesystems.FS
+	var list []filesystems.Listing
 
-	h.App.Session.Put(r.Context(), "foo", myData)
+	fsType := ""
+	if r.URL.Query().Get("fs-type") != "" {
+		fsType = r.URL.Query().Get("fs-type")
+	}
 
-	myValue := h.App.Session.GetString(r.Context(), "foo")
+	curPath := "/"
+	if r.URL.Query().Get("curPath") != "" {
+		curPath = r.URL.Query().Get("curPath")
+		curPath, _ = url.QueryUnescape(curPath)
+	}
+
+	if fsType != "" {
+		switch fsType {
+		case "MINIO":
+			f := h.App.FileSystems["MINIO"].(miniofilesystem.Minio)
+			fs = &f
+			fsType = "MINIO"
+
+		case "SFTP":
+			f := h.App.FileSystems["SFTP"].(sftpfilesystem.SFTP)
+			fs = &f
+			fsType = "SFTP"
+
+		case "WEBDAV":
+			f := h.App.FileSystems["WEBDAV"].(webdavfilesystem.WebDAV)
+			fs = &f
+			fsType = "WEBDAV"
+
+		case "S3":
+			f := h.App.FileSystems["S3"].(s3filesystem.S3)
+			fs = &f
+			fsType = "S3"
+		}
+
+		l, err := fs.List(curPath)
+		if err != nil {
+			h.App.ErrorLog.Println(err)
+			return
+		}
+
+		list = l
+	}
 
 	vars := make(jet.VarMap)
-	vars.Set("foo", myValue)
-
-	err := h.App.Render.JetPage(w, r, "sessions", vars, nil)
-	if err != nil {
-		h.App.ErrorLog.Println("error rendering:", err)
-	}
-}
-
-// JSON is the handler to demonstrate json responses
-func (h *Handlers) JSON(w http.ResponseWriter, r *http.Request) {
-	var payload struct {
-		ID      int64    `json:"id"`
-		Name    string   `json:"name"`
-		Hobbies []string `json:"hobbies"`
-	}
-
-	payload.ID = 10
-	payload.Name = "Jack Jones"
-	payload.Hobbies = []string{"karate", "tennis", "programming"}
-
-	err := h.App.WriteJSON(w, http.StatusOK, payload)
+	vars.Set("list", list)
+	vars.Set("fs_type", fsType)
+	vars.Set("curPath", curPath)
+	err := h.render(w, r, "list-fs", vars, nil)
 	if err != nil {
 		h.App.ErrorLog.Println(err)
 	}
 }
 
-// XML is the handler to demonstrate XML responses
-func (h *Handlers) XML(w http.ResponseWriter, r *http.Request) {
-	type Payload struct {
-		ID      int64    `xml:"id"`
-		Name    string   `xml:"name"`
-		Hobbies []string `xml:"hobbies>hobby"`
-	}
+func (h *Handlers) UploadToFS(w http.ResponseWriter, r *http.Request) {
+	fsType := r.URL.Query().Get("type")
 
-	var payload Payload
-	payload.ID = 10
-	payload.Name = "John Smith"
-	payload.Hobbies = []string{"karate", "tennis", "programming"}
+	vars := make(jet.VarMap)
+	vars.Set("fs_type", fsType)
 
-	err := h.App.WriteXML(w, http.StatusOK, payload)
+	err := h.render(w, r, "upload", vars, nil)
 	if err != nil {
 		h.App.ErrorLog.Println(err)
 	}
 }
 
-// DownloadFile is the handler to demonstrate file download reponses
-func (h *Handlers) DownloadFile(w http.ResponseWriter, r *http.Request) {
-	h.App.DownloadFile(w, r, "./public/images", "Lara.jpg")
-}
-
-func (h *Handlers) TestCrypto(w http.ResponseWriter, r *http.Request) {
-	plainText := "Hello, world"
-	fmt.Fprint(w, "Unencrypted: "+plainText+"\n")
-	encrypted, err := h.encrypt(plainText)
+func (h *Handlers) PostUploadToFS(w http.ResponseWriter, r *http.Request) {
+	fileName, err := getFileToUpload(r, "formFile")
 	if err != nil {
-		h.App.ErrorLog.Println(err)
-		h.App.Error500(w, r)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	fmt.Fprint(w, "Encrypted: "+encrypted+"\n")
+	uploadType := r.Form.Get("upload-type")
 
-	decrypted, err := h.decrypt(encrypted)
-	if err != nil {
-		h.App.ErrorLog.Println(err)
-		h.App.Error500(w, r)
-		return
+	switch uploadType {
+	case "MINIO":
+		fs := h.App.FileSystems["MINIO"].(miniofilesystem.Minio)
+		err = fs.Put(fileName, "")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	case "SFTP":
+		fs := h.App.FileSystems["SFTP"].(sftpfilesystem.SFTP)
+		err = fs.Put(fileName, "")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	case "WEBDAV":
+		fs := h.App.FileSystems["WEBDAV"].(webdavfilesystem.WebDAV)
+		err = fs.Put(fileName, "")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	case "S3":
+		fs := h.App.FileSystems["S3"].(s3filesystem.S3)
+		err = fs.Put(fileName, "")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 
-	fmt.Fprint(w, "Decrypted: "+decrypted+"\n")
+	h.App.Session.Put(r.Context(), "flash", "File uploaded!")
+	http.Redirect(w, r, "/files/upload?type="+uploadType, http.StatusSeeOther)
+}
+
+func getFileToUpload(r *http.Request, fieldName string) (string, error) {
+	_ = r.ParseMultipartForm(10 << 20)
+
+	file, header, err := r.FormFile(fieldName)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	dst, err := os.Create(fmt.Sprintf("./tmp/%s", header.Filename))
+	if err != nil {
+		return "", err
+	}
+	defer dst.Close()
+
+	_, err = io.Copy(dst, file)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("./tmp/%s", header.Filename), nil
+}
+
+func (h *Handlers) DeleteFromFS(w http.ResponseWriter, r *http.Request) {
+	var fs filesystems.FS
+	fsType := r.URL.Query().Get("fs_type")
+	item := r.URL.Query().Get("file")
+
+	switch fsType {
+	case "MINIO":
+		f := h.App.FileSystems["MINIO"].(miniofilesystem.Minio)
+		fs = &f
+	case "SFTP":
+		f := h.App.FileSystems["SFTP"].(sftpfilesystem.SFTP)
+		fs = &f
+	case "WEBDAV":
+		f := h.App.FileSystems["WEBDAV"].(webdavfilesystem.WebDAV)
+		fs = &f
+	case "S3":
+		f := h.App.FileSystems["S3"].(s3filesystem.S3)
+		fs = &f
+	}
+
+	deleted := fs.Delete([]string{item})
+	if deleted {
+		h.App.Session.Put(r.Context(), "flash", fmt.Sprintf("%s was deleted", item))
+		http.Redirect(w, r, "/list-fs?fs-type="+fsType, http.StatusSeeOther)
+	}
 }

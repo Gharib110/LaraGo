@@ -30,7 +30,7 @@ func doNew(appName string) {
 	// git clone the skeleton application
 	color.Green("\tCloning repository...")
 	_, err := git.PlainClone("./"+appName, false, &git.CloneOptions{
-		URL:      "git@github.com:Gharib110/Lara-app.git",
+		URL:      "https://github.com/Gharib110/LaraGo.git",
 		Progress: os.Stdout,
 		Depth:    1,
 	})

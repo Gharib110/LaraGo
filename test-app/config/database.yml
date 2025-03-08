@@ -1,0 +1,9 @@
+---
+development:
+  dialect: postgres
+  database: lara
+  user: postgres
+  password: password
+  host: 127.0.0.1
+  port: 5432
+  pool: 5

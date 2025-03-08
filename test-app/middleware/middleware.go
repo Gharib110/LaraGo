@@ -1,12 +1,12 @@
 package middleware
 
 import (
-	"myapp/data"
+	"test-app/data"
 
 	"github.com/Gharib110/LaraGo"
 )
 
 type Middleware struct {
-	App    *Lara.Lara
+	App    *lara.Lara
 	Models data.Models
 }

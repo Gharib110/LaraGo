@@ -5,14 +5,13 @@ import (
 	"testing"
 )
 
-
 func TestMail_SendSMTPMessage(t *testing.T) {
 	msg := Message{
-		From: "me@here.com",
-		FromName: "Joe",
-		To: "you@there.com",
-		Subject: "test",
-		Template: "test",
+		From:        "me@ghariib.ir",
+		FromName:    "Joe",
+		To:          "alirezagharib110@gmail.com",
+		Subject:     "test",
+		Template:    "test",
 		Attachments: []string{"./testdata/mail/test.html.tmpl"},
 	}
 
@@ -24,15 +23,15 @@ func TestMail_SendSMTPMessage(t *testing.T) {
 
 func TestMail_SendUsingChan(t *testing.T) {
 	msg := Message{
-		From: "me@here.com",
-		FromName: "Joe",
-		To: "you@there.com",
-		Subject: "test",
-		Template: "test",
+		From:        "me@ghariib.ir",
+		FromName:    "Joe",
+		To:          "alirezagharib110@gmail.com",
+		Subject:     "test",
+		Template:    "test",
 		Attachments: []string{"./testdata/mail/test.html.tmpl"},
 	}
 
-	mailer.Jobs <-msg
+	mailer.Jobs <- msg
 	res := <-mailer.Results
 	if res.Error != nil {
 		t.Error(errors.New("failed to send over channel"))
@@ -48,9 +47,9 @@ func TestMail_SendUsingChan(t *testing.T) {
 
 func TestMail_SendUsingAPI(t *testing.T) {
 	msg := Message{
-		To: "you@there.com",
-		Subject: "test",
-		Template: "test",
+		To:          "alirezagharib110@gmail.com",
+		Subject:     "test",
+		Template:    "test",
 		Attachments: []string{"./testdata/mail/test.html.tmpl"},
 	}
 
@@ -69,11 +68,11 @@ func TestMail_SendUsingAPI(t *testing.T) {
 
 func TestMail_buildHTMLMessage(t *testing.T) {
 	msg := Message{
-		From: "me@here.com",
-		FromName: "Joe",
-		To: "you@there.com",
-		Subject: "test",
-		Template: "test",
+		From:        "me@ghariib.ir",
+		FromName:    "Alireza",
+		To:          "alirezagharib110@gmail.com",
+		Subject:     "test",
+		Template:    "test",
 		Attachments: []string{"./testdata/mail/test.html.tmpl"},
 	}
 
@@ -85,11 +84,11 @@ func TestMail_buildHTMLMessage(t *testing.T) {
 
 func TestMail_buildPlainMessage(t *testing.T) {
 	msg := Message{
-		From: "me@here.com",
-		FromName: "Joe",
-		To: "you@there.com",
-		Subject: "test",
-		Template: "test",
+		From:        "me@ghariib.ir",
+		FromName:    "Alireza",
+		To:          "alirezagharib110@gmail.com",
+		Subject:     "test",
+		Template:    "test",
 		Attachments: []string{"./testdata/mail/test.html.tmpl"},
 	}
 
@@ -101,11 +100,11 @@ func TestMail_buildPlainMessage(t *testing.T) {
 
 func TestMail_send(t *testing.T) {
 	msg := Message{
-		From: "me@here.com",
-		FromName: "Joe",
-		To: "you@there.com",
-		Subject: "test",
-		Template: "test",
+		From:        "me@ghariib.ir",
+		FromName:    "Alireza",
+		To:          "alirezagharib110@gmail.com",
+		Subject:     "test",
+		Template:    "test",
 		Attachments: []string{"./testdata/mail/test.html.tmpl"},
 	}
 
@@ -130,11 +129,11 @@ func TestMail_send(t *testing.T) {
 
 func TestMail_ChooseAPI(t *testing.T) {
 	msg := Message{
-		From: "me@here.com",
-		FromName: "Joe",
-		To: "you@there.com",
-		Subject: "test",
-		Template: "test",
+		From:        "me@ghariib.ir",
+		FromName:    "Alireza",
+		To:          "alirezagharib110@gmail.com",
+		Subject:     "test",
+		Template:    "test",
 		Attachments: []string{"./testdata/mail/test.html.tmpl"},
 	}
 	mailer.API = "unknown"

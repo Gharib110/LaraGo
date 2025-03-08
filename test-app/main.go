@@ -1,21 +1,21 @@
 package main
 
 import (
-	"myapp/data"
-	"myapp/handlers"
-	"myapp/middleware"
+	"test-app/data"
+	"test-app/handlers"
+	"test-app/middleware"
 
 	"github.com/Gharib110/LaraGo"
 )
 
 type application struct {
-	App        *Lara.Lara
+	App        *lara.Lara
 	Handlers   *handlers.Handlers
 	Models     data.Models
 	Middleware *middleware.Middleware
 }
 
 func main() {
-	c := initApplication()
-	c.App.ListenAndServe()
+	l := initApplication()
+	l.App.ListenAndServe()
 }

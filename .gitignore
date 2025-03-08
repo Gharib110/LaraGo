@@ -29,3 +29,5 @@ Lara/cmd/.DS_Store
 Lara/cmd/cli/templates/.DS_Store
 test-app/views/.DS_Store
 test-app/views/.DS_Store
+test-app/tmp/.DS_Store
+Lara/filesystems/.DS_Store

@@ -1,0 +1,144 @@
+{{extends "./layouts/base.jet"}}
+
+{{block browserTitle()}}List Filesystem{{end}}
+
+{{block css()}}
+<style>
+    .swal2-styled.swal2-confirm {
+        background-color: #0b5ed7 !important;
+    }
+</style>
+{{end}}
+
+{{block pageContent()}}
+
+<div class="col">
+    <div class="mt-5">
+        <div>
+            <h1>Lara: List Filesystem</h1>
+            <hr>
+
+            <form method="get" action="/list-fs" id="fs-form"
+                  class="needs-validation row row-cols-lg-auto g-3 align-items-center" novalidate>
+
+                <div class="col-12">
+                    <label for="fs-type" class="visually-hidden">Filesystem...</label>
+                    <select class="form-select" id="fs-type" name="fs-type" required>
+                        <option value="">Choose...</option>
+                        <option {{if fs_type == "S3"}} selected {{end}} value="S3">S3 Bucket</option>
+                        <option {{if fs_type == "MINIO"}} selected {{end}}value="MINIO">Minio</option>
+                        <option {{if fs_type == "SFTP"}} selected {{end}}value="SFTP">SFTP</option>
+                        <option {{if fs_type == "WEBDAV"}} selected {{end}}value="WEBDAV">WebDAV</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <input type="submit" class= "btn btn-primary" value="List">
+                </div>
+                <input type="hidden" name="curPath" id="curPath" value="{{curPath}}">
+            </form>
+
+            <hr>
+
+            {{if list}}
+            <table class="table table-compact table-striped mt-3">
+                <thead>
+                <tr>
+                    <th>File</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {{if curPath != "%2F"}}
+                    <tr>
+                        <td colspan="3">
+                            <a href="javascript:void(0);" onclick="chDir('..')"><i class="bi bi-arrow-up-circle"></i> </a>
+                        </td>
+                    </tr>
+                    {{end}}
+
+                    {{range list}}
+                        <tr>
+                            <td>
+                                {{if !.IsDir}}
+                                    {{.Key}}
+                                {{else}}
+                                    <a href="javascript:void(0);" onclick="chDir('{{.Key}}')">{{.Key}}</a>
+                                {{end}}
+                            </td>
+                            <td><a href="javascript:void(0);" onclick="deleteItem('{{fs_type}}', '{{.Key}}')">Delete</a></td>
+                        </tr>
+                    {{end}}
+                </tbody>
+            </table>
+            {{end}}
+        </div>
+    </div>
+
+</div>
+
+{{end}}
+
+
+{{block js()}}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+        (function () {
+            'use strict'
+
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            let forms = document.querySelectorAll('.needs-validation')
+
+            // Loop over them and prevent submission
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        document.getElementById("curPath").value = encodeURIComponent("/");
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    })
+
+    function deleteItem(type, name) {
+        Swal.fire({
+            html: 'Are you sure you want to delete this file?',
+            showDenyButton: true,
+            showCancelButton: false,
+            confirmButtonText: 'Delete',
+            icon: 'warning',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/delete-from-fs?fs_type=" + type + "&file=" + name;
+            }
+        })
+
+    }
+
+    function chDir(name) {
+        let field = document.getElementById("curPath");
+        let fsType = document.getElementById("fs-type")
+        let old = decodeURI(field.value);
+        if (name === "..") {
+            let exploded = old.split("/");
+            exploded.pop();
+            let newPath = exploded.join("/");
+            window.location.href = "/list-fs?fs-type="
+                + fsType.value
+                + "&curPath="
+                + encodeURIComponent(newPath);
+        } else {
+            field.value = encodeURIComponent(old + name + "/");
+            window.location.href = "/list-fs?fs-type="
+                + fsType.value
+                + "&curPath="
+                + field.value;
+        }
+    }
+</script>
+{{end}}
